@@ -15,16 +15,6 @@ data Expr = Var Char
           -- | Parens SimpleExpr
             deriving (Show)
 
-data Coordinate = Coord { x :: Int
-                        , y :: Int
-                        }
-instance Show Coordinate where
-  show (Coord x y) = "(" ++ (show x) ++ "," ++ (show y) ++ ")"
-
-data Vector  = Vector { i :: Int
-                      , j :: Int
-                      } deriving (Show)
-
 opify :: Char -> Op
 opify c = Op $ case c of
                   '+' -> (+)
@@ -32,24 +22,7 @@ opify c = Op $ case c of
                   '*' -> (*)
                   -- '/' -> quot
 
--- returns f(x, y)
-functionify :: Expr -> (Int -> Int -> Int)
-functionify (Var c) = (\x _ -> x)
-functionify (Phrase (Op op) a b) = (\x y -> (p x y) `op` (q x y))
-  where
-    p = functionify a
-    q = functionify b
-
-getVectors:: (Coordinate -> Vector) -> [Coordinate] -> [Vector]
-getVectors = map
-
-applyToCoord :: (Int -> Int -> Int) -> Coordinate -> Int
-applyToCoord f (Coord x y) = f x y
-
-getCoordList :: (Int, Int) -> (Int, Int) -> Int -> [Coordinate]
-getCoordList (xMin, xMax) (yMin, yMax) spacing =
-  Coord <$> [xMin, (xMin + spacing)..xMax] <*> [yMin, (yMin + spacing) .. yMax]
-
+-- Parsing
 varP :: Parser Expr
 varP = Var <$> oneOf "xy"
 
@@ -68,5 +41,11 @@ exprP = (try phraseP) <|> varP
 
 parseExpr :: String -> Either ParseError Expr
 parseExpr = parse exprP ""
+
+-- getArguments :: IO ()
+-- getArguments = do
+--   putStrLn "first function?"
+--   putStrLn "second function?"
+--   putStrLn ""
 
 -- main :: IO ()
